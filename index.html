@@ -228,6 +228,14 @@ main {
   margin-bottom: 1.5rem;
 }
 
+.section-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 .section-header h2 {
   font-size: 1.4rem;
   margin-bottom: 0.3rem;
@@ -236,6 +244,44 @@ main {
 .section-header p {
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+.search-box {
+  position: relative;
+  min-width: 220px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+.search-box input::placeholder {
+  color: #64748b;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 /* Games Grid */
@@ -707,6 +753,15 @@ textarea::placeholder {
   main {
     padding: 1rem;
   }
+
+  .section-header-top {
+    flex-direction: column;
+  }
+
+  .search-box {
+    max-width: 100%;
+    min-width: 100%;
+  }
 }
   </style>
 </head>
@@ -761,16 +816,24 @@ textarea::placeholder {
       <!-- Gallery -->
       <section id="gallery" class="gallery">
         <div class="section-header">
-          <h2>Koleksi Game</h2>
-          <p id="game-count">0 game tersedia</p>
+          <div class="section-header-top">
+            <div>
+              <h2>Koleksi Game</h2>
+              <p id="game-count">0 game tersedia</p>
+            </div>
+            <div class="search-box">
+              <input type="text" id="search-input" placeholder="Cari game..." oninput="renderGames()">
+              <span class="search-icon">🔍</span>
+            </div>
+          </div>
         </div>
         <div id="games-grid" class="games-grid">
           <!-- Games will be rendered here -->
         </div>
         <div id="empty-state" class="empty-state hidden">
           <div class="empty-icon">🕹️</div>
-          <h3>Belum ada game</h3>
-          <p>Admin belum menambahkan game apapun.</p>
+          <h3 id="empty-title">Belum ada game</h3>
+          <p id="empty-desc">Admin belum menambahkan game apapun.</p>
         </div>
       </section>
     </main>
@@ -1054,18 +1117,39 @@ function renderGames() {
   const grid = document.getElementById('games-grid');
   const empty = document.getElementById('empty-state');
   const countEl = document.getElementById('game-count');
+  const searchInput = document.getElementById('search-input');
+  const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
 
-  countEl.textContent = `${games.length} game tersedia`;
+  // Filter games by search
+  const filtered = query
+    ? games.filter(g =>
+        (g.title || '').toLowerCase().includes(query) ||
+        (g.description || '').toLowerCase().includes(query)
+      )
+    : games;
 
-  if (games.length === 0) {
+  countEl.textContent = query
+    ? `${filtered.length} dari ${games.length} game`
+    : `${games.length} game tersedia`;
+
+  if (filtered.length === 0) {
     grid.innerHTML = '';
     empty.classList.remove('hidden');
+    const emptyTitle = document.getElementById('empty-title');
+    const emptyDesc = document.getElementById('empty-desc');
+    if (query) {
+      emptyTitle.textContent = 'Tidak ditemukan';
+      emptyDesc.textContent = `Tidak ada game yang cocok dengan "${searchInput.value}"`;
+    } else {
+      emptyTitle.textContent = 'Belum ada game';
+      emptyDesc.textContent = 'Admin belum menambahkan game apapun.';
+    }
     return;
   }
 
   empty.classList.add('hidden');
 
-  grid.innerHTML = games.map(game => `
+  grid.innerHTML = filtered.map(game => `
     <div class="game-card" onclick="openGame('${escapeHtml(game.url)}')">
       ${game.cover 
         ? `<img src="${escapeHtml(game.cover)}" alt="${escapeHtml(game.title)}" class="game-cover" onerror="this.outerHTML='<div class=\\'game-cover-placeholder\\'>🎮</div>'">`

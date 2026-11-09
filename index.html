@@ -257,7 +257,8 @@ main {
 
 .search-box input {
   width: 100%;
-  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  padding: 0.65rem 1rem 0.65rem 2.5rem !important;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -1071,7 +1072,7 @@ async function fetchGames() {
     renderGames();
   } catch (e) {
     console.error('Fetch games error:', e);
-    showToast('Gagal memuat data dari Appwrite. Cek collection & permission.', 'error');
+    showToast('Gagal memuat data: ' + (e.message || 'cek collection & permission'), 'error');
     loadLocalFallback();
   }
 }

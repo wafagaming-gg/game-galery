@@ -917,12 +917,14 @@ textarea::placeholder {
 
   <script>
 // ========== APPWRITE CONFIG ==========
-// WAJIB diisi!
-// 1. Buka https://cloud.appwrite.io → buat project
-// 2. Settings → copy Project ID dan Endpoint
-// 3. Buat Database + Collection (lihat petunjuk di bawah)
-const APPWRITE_ENDPOINT = 'https://sgp.cloud.appwrite.io/v1'; // atau endpoint region kamu
+// Konfigurasi project dari dashboard Appwrite.
+// Untuk file HTML tunggal ini, konfigurasi ditulis langsung di sini;
+// tidak perlu file .env atau menjalankan pnpm.
+const APPWRITE_PROJECT_NAME = 'game gallery';
+const APPWRITE_ENDPOINT = 'https://sgp.cloud.appwrite.io/v1';
 const APPWRITE_PROJECT_ID = '6aed9bb0000cf594243a';
+
+// ID database dan collection yang sudah ada di file tetap dipertahankan.
 const APPWRITE_DATABASE_ID = 'Y6aed9d10001ddd7a65b1';
 const APPWRITE_GAMES_COLLECTION_ID = '6af11b7b0029e452e219';
 const APPWRITE_SETTINGS_COLLECTION_ID = '6af11e3d0029c95b7ed0';
